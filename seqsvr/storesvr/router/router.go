@@ -1,9 +1,8 @@
 package router
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
+	"github.com/hackez/gdisid/seqsvr/storesvr/service"
 )
 
 var (
@@ -12,10 +11,19 @@ var (
 
 // Register http router support server for alloc server
 func Register() {
+	r = gin.Default()
 	basic := r.Group("api/")
 	{
 		alloc := basic.Group("/alloc")
-		alloc.GET("/config/get") // TODO: get alloc start config
+
+		config := alloc.Group("/config")
+		config.GET("/get", service.GetAllocConfig) // TODO: get alloc start config
+
+		token := alloc.Group("/token")
+		token.POST("/refresh", service.RefreshToken) // TODO: refresh alloc server token
+
+		uid := alloc.Group("/uid")
+		uid.POST("/update", service.UpdateUID)
 	}
 }
 

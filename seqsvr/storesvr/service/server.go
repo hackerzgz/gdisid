@@ -1,4 +1,4 @@
-package storesvr
+package service
 
 type Server struct {
 	ID uint64

@@ -1,4 +1,8 @@
-package storesvr
+package service
+
+import (
+	"github.com/gin-gonic/gin"
+)
 
 type User struct {
 	ID       uint64
@@ -12,4 +16,8 @@ type User struct {
 func (u *User) GetSeq() uint64 {
 	// TODO: compared max sequence in group
 	return u.Sequence
+}
+
+func UpdateUID(c *gin.Context) {
+
 }

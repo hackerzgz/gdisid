@@ -1,4 +1,4 @@
-package storesvr
+package service
 
 type Group struct {
 	ID          uint64
