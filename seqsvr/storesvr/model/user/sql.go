@@ -3,6 +3,7 @@ package user
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/hackez/gdisid/seqsvr/common/mysql"
 )
@@ -73,4 +74,45 @@ func Add(user User) (affected, lastID int64, err error) {
 	}
 
 	return affected, lastID, nil
+}
+
+// Modify
+func Modify(user User) (affected int64, err error) {
+	if user.ID <= 0 {
+		return affected, fmt.Errorf("invalid user")
+	}
+
+	sql := bytes.NewBufferString(updateSQL)
+
+	sets := make([]string, 0, 4)
+	args := make([]interface{}, 0, 4)
+
+	if user.Name != "" {
+		sets = append(sets, "name=?")
+		args = append(args, user.Name)
+	}
+	if user.Sequence > 0 {
+		sets = append(sets, "sequence=?")
+		args = append(args, user.Sequence)
+	}
+	if user.GroupID > 0 {
+		sets = append(sets, "group_id=?")
+		args = append(args, user.GroupID)
+	}
+
+	if len(sets) == 0 {
+		return affected, fmt.Errorf("nothing changed")
+	}
+
+	sql.WriteString(strings.Join(sets, ","))
+	sql.WriteString(" WHERE uid=?")
+
+	args = append(args, user.ID)
+	r, err := mysql.DB.Exec(sql.String(), args...)
+	if err != nil {
+		return affected, err
+	}
+
+	affected, err = r.RowsAffected()
+	return
 }

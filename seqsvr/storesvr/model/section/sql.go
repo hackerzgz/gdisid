@@ -100,12 +100,13 @@ func Modify(set Section) (affected int64, err error) {
 	}
 
 	if len(sets) == 0 {
-		return 0, nil
+		return 0, fmt.Errorf("nothing changed")
 	}
 
 	sql.WriteString(strings.Join(sets, ","))
 	sql.WriteString(" WHERE id=?")
 
+	args = append(args, set.ID)
 	r, err := mysql.DB.Exec(sql.String(), args...)
 	if err != nil {
 		return affected, err
