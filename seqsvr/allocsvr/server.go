@@ -8,4 +8,5 @@ type Server struct {
 
 func New() (*Server, error) {
 	// should apply config from store server
+	return nil, nil
 }

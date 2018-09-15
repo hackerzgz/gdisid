@@ -17,15 +17,14 @@ var (
 
 // Config databases
 type Config struct {
-	Host     string `json:"host"`
-	Port     int32  `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	DBName   string `json:"db_name"`
-	Params   string `json:"params"`
-
-	MaxLifetime int32 `json:"max_lifetime"`
-	PoolSize    int32 `json:"pool_size"`
+	Host        string `json:"host"`
+	Port        int    `json:"port"`
+	User        string `json:"user"`
+	Password    string `json:"password"`
+	DBName      string `json:"db_name"`
+	Params      string `json:"params"`
+	MaxLifetime int    `json:"max_lifetime"`
+	PoolSize    int    `json:"pool_size"`
 }
 
 // DSN return data source name to connect mysql

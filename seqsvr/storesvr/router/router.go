@@ -13,18 +13,26 @@ var (
 func Register() {
 	r = gin.Default()
 	basic := r.Group("api/")
-	{
-		alloc := basic.Group("/alloc")
 
-		config := alloc.Group("/config")
-		config.GET("/get", service.GetAllocConfig) // TODO: get alloc start config
+	// register alloc group api
+	registerAlloc(basic)
+}
 
-		token := alloc.Group("/token")
-		token.POST("/refresh", service.RefreshToken) // TODO: refresh alloc server token
+// registerAlloc api group for alloc request
+func registerAlloc(group *gin.RouterGroup) {
+	allocG := group.Group("/alloc")
 
-		uid := alloc.Group("/uid")
-		uid.POST("/update", service.UpdateUID)
-	}
+	// config group provide alloc service running config
+	confG := allocG.Group("/config")
+	confG.GET("/get", service.GetAllocConfig) // TODO: get alloc start config
+
+	// token group provide alloc service validity check
+	tokenG := allocG.Group("/token")
+	tokenG.POST("/refresh", service.RefreshToken) // TODO: refresh alloc server token
+
+	// uid group provide newest distribution uid for alloc service
+	uidG := allocG.Group("/uid")
+	uidG.POST("/update", service.UpdateUID) // TODO(hackerzgz): update uid steps and return newest uid
 }
 
 // Run start store server under address
