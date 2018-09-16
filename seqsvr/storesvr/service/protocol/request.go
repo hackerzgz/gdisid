@@ -14,7 +14,7 @@ type GetAllocConfigReq struct {
 	IP string `json:"ip"`
 }
 
-func (req GetAllocConfigReq) Validate() error {
+func (req *GetAllocConfigReq) Validate() error {
 	if req.IP == "" {
 		return errors.New("empty ip")
 	}

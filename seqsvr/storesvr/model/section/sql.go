@@ -11,11 +11,11 @@ import (
 
 const (
 	tblName      = "group"
-	allFields    = "`id`, `number`, `ip`, `bind_date`"
-	selectFields = "`id`, `number`, INET_NTOA(`ip`), `bind_date`"
+	allFields    = "`id`, `group_left_interval`, `group_right_interval`, `is_bind`, `ip`, `bind_date`"
+	selectFields = "`id`, `group_left_interval`, `group_right_interval`, `is_bind`, INET_NTOA(`ip`), `bind_date`"
 
 	selectSQL = "SELECT " + selectFields + " FROM " + tblName
-	insertSQL = "INSERT INTO " + tblName + " (" + allFields + ") VALUES(?,?,INET_ATON(?),?)"
+	insertSQL = "INSERT INTO " + tblName + " (" + allFields + ") VALUES(?,?,?,?,INET_ATON(?),?)"
 	updateSQL = "UPDATE " + tblName + " SET "
 )
 
@@ -46,7 +46,8 @@ func Get(where, orderby string, offset, limit int, args ...interface{}) (sets []
 	sets = make([]*Section, 0, 16)
 	for rows.Next() {
 		s := new(Section)
-		err = rows.Scan(&s.ID, &s.Number, &s.IP, &s.BindDate)
+		err = rows.Scan(&s.ID, &s.GroupLeftInterval, &s.GroupRightInterval,
+			&s.IsBind, &s.IP, &s.BindDate)
 		if err != nil {
 			sets = nil
 			return nil, err
@@ -59,7 +60,9 @@ func Get(where, orderby string, offset, limit int, args ...interface{}) (sets []
 }
 
 func Add(set Section) (affected, lastID int64, err error) {
-	r, err := mysql.DB.Exec(insertSQL, set.ID, set.Number, set.IP, time.Now().Unix())
+	r, err := mysql.DB.Exec(insertSQL,
+		set.ID, set.GroupLeftInterval, set.GroupRightInterval,
+		set.IsBind, set.IP, set.BindDate)
 	if err != nil {
 		return
 	}
@@ -86,9 +89,13 @@ func Modify(set Section) (affected int64, err error) {
 
 	sets := make([]string, 0, 4)
 	args := make([]interface{}, 0, 4)
-	if set.Number > 0 {
-		sets = append(sets, "number=?")
-		args = append(args, set.Number)
+	if set.GroupLeftInterval > 0 {
+		sets = append(sets, "group_left_interval=?")
+		args = append(args, set.GroupLeftInterval)
+	}
+	if set.GroupRightInterval > 0 {
+		sets = append(sets, "group_right_interval=?")
+		args = append(args, set.GroupRightInterval)
 	}
 	if set.IP != "" {
 		sets = append(sets, "ip=?")
@@ -101,6 +108,13 @@ func Modify(set Section) (affected int64, err error) {
 
 	if len(sets) == 0 {
 		return 0, fmt.Errorf("nothing changed")
+	}
+	// WARNING(hackerzgz): recommand
+	sets = append(sets, "is_bind=?")
+	if set.IsBind == true {
+		args = append(args, true)
+	} else {
+		args = append(args, false)
 	}
 
 	sql.WriteString(strings.Join(sets, ","))
