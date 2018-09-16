@@ -1,6 +1,8 @@
 package protocol
 
-import "errors"
+import (
+	"errors"
+)
 
 // Request send message for any interafce
 type Request interface {

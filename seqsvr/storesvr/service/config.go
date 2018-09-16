@@ -1,11 +1,12 @@
 package service
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hackez/gdisid/seqsvr/storesvr/service/protocol"
+	"github.com/hackez/zapwrapper"
+	"go.uber.org/zap"
 )
 
 // GetAllocConfig return avaliable config
@@ -19,7 +20,9 @@ func GetAllocConfig(c *gin.Context) {
 		})
 		return
 	}
-	log.Printf("got GetAllocConfig request: %v\n", *req)
+	zapwrapper.Logger.Info(
+		"got GatAllocConfig request:",
+		zap.String("ip:", req.IP))
 
 	err = req.Validate()
 	if err != nil {

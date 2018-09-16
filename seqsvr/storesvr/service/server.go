@@ -6,3 +6,7 @@ type Server struct {
 	Users  map[uint64]User
 	Groups map[uint64]Group
 }
+
+func getReq(c *gin.Context) {
+
+}
